@@ -1,0 +1,14 @@
+module.exports = {
+  apps : [
+      {
+        name: "qrcode-shortener",
+        script: "./server/index.js",
+        watch: false,
+        env: {
+          "NODE_ENV": "production",
+          "PORT": 1337,
+          "DOMAIN": "https://yourshortdomain.com"
+        }
+      }
+  ]
+}
