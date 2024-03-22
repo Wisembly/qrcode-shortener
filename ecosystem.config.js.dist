@@ -7,7 +7,9 @@ module.exports = {
         env: {
           "NODE_ENV": "production",
           "PORT": 1337,
-          "DOMAIN": "https://yourshortdomain.com"
+          "DOMAIN": "https://yourshortdomain.com",
+          "REDIS_HOST": "localhost",
+          "REDIS_PORT": 6379,
         }
       }
   ]
