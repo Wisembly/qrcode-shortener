@@ -31,21 +31,24 @@ pm2 start ecosystem.config.js
 ```bash
 curl -X GET "http://localhost:3322/shorten?url=https://www.google.com"
 ```
+
 Optional parameters:
 
 - `desiredShort`: the desired short url. If not provided, a random 4 characters string will be generated.
+- `secureKey`: the secret key to access the stats. If not provided, the stats will be public.
 
-## dynamically generate a QRCode
+Example: `http://localhost:3322/shorten?url=https://www.google.com&desiredShort=goog&secureKey=yourPublicKey`
 
-```html
-<a href="http://localhost:3322/qrcode?url=https://www.google.com">
+## Register a secureKey
+
+A secure key is used to generate short codes whose stats won't be public. To register a secure key, use the following command:
+
+```bash
+curl -X POST "http://localhost:3322/secure" -d "key=yourPublicKey&secret=yourSecretKey" -H "Content-Type: application/x-www-form-urlencoded" -H "Accept: application/json"
 ```
 
-Optional parameters:
-- `desiredShort`: the desired short url. If not provided, a random 4 characters string will be generated.
-- `size`: the size of the QRCode. Default is 512x512.
-- `quality`: the quality of the QRCode (L, M, H). Default is M.
-- `output`: the output format of the QRCode (png, data). Default is png.
+Register it once, and use `secureKey=yourPublicKey` on each request to generate a short code.
+To retrieve stats of a shortcode, use `secret=yourSecretKey` as the secret key.
 
 ## Get shortcode stats
 
@@ -54,3 +57,23 @@ curl -X GET "http://localhost:3322/stats?{short}+"
 ```
 
 Use the shortcode you want to get the stats from, followed by a `+` sign.
+
+Optional parameters:
+
+- `secret`: the secret key to access the stats if the shortcode is secured
+
+## Dynamically generate a QRCode
+
+```html
+<a href="http://localhost:3322/qrcode?url=https://www.google.com">
+```
+
+Optional parameters:
+
+- `desiredShort`: the desired short url. If not provided, a random 4 characters string will be generated.
+- `size`: the size of the QRCode. Default is 512x512.
+- `quality`: the quality of the QRCode (L, M, H). Default is M.
+- `output`: the output format of the QRCode (png, data). Default is png.
+- `secureKey`: the secret key used to secure the shortcode stats
+
+Example: `http://localhost:3322/qrcode?url=https://www.google.com&desiredShort=goog&size=256x256&quality=H&output=data&secureKey=yourPublicKey`

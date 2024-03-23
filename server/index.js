@@ -25,8 +25,8 @@ app.get('/', (req, res) => {
 });
 
 // register a new secure key/value couple
-app.get('/secure', async (req, res) => {
-  const { key, secret } = req.query;
+app.post('/secure', async (req, res) => {
+  const { key, secret } = req.body;
 
   if (!key || !secret)
     return res.status(400).send({ error: 'key and secret query parameters are required' });
