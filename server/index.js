@@ -24,13 +24,28 @@ app.get('/', (req, res) => {
   res.send({ hello: 'world' });
 });
 
+// register a new secure key/value couple
+app.get('/secure', async (req, res) => {
+  const { key, secret } = req.query;
+
+  if (!key || !secret)
+    return res.status(400).send({ error: 'key and secret query parameters are required' });
+
+  const result = await shortener.registerSecret(key, secret)
+
+  if (!result)
+    return res.status(409).send({ error: 'key already exists, cannot override' });
+
+  res.send({ message: 'ok' });
+});
+
 app.get('/qrcode', async (req, res) => {
-  const { url, quality, size, output, desiredShort } = req.query;
+  const { url, quality, size, output, secureKey, desiredShort } = req.query;
 
   if (!url)
     return res.status(400).send({ error: 'url query parameter is required' });
 
-  const short = await shortener.shorten(url, desiredShort);
+  const short = await shortener.shorten(url, desiredShort, secureKey);
 
   let shortUrl = `${domain}/${short}`;
 
@@ -57,23 +72,25 @@ app.get('/qrcode', async (req, res) => {
 });
 
 app.get('/shorten', async (req, res) => {
-  const { url, desiredShort } = req.query;
+  const { url, desiredShort, secureKey } = req.query;
 
   if (!url)
     return res.status(400).send({ error: 'url query parameter is required' });
 
-  const short = await shortener.shorten(url, desiredShort);
+  const short = await shortener.shorten(url, desiredShort, secureKey);
 
   res.send({
     short,
     url: `${domain}/${short}`,
     stats: `${domain}/${short}+`,
+    secured: !!secureKey,
   });
 });
 
 // route every /* url
 app.get('/:short', async (req, res) => {
   let { short } = req.params;
+  const { secret } = req.query;
   let showStats = false;
 
   // if short ends by a '+' sign, remove it and display stats, no redirect
@@ -82,7 +99,7 @@ app.get('/:short', async (req, res) => {
     showStats = true;
   }
 
-  const data = await shortener.get(short, showStats);
+  const data = await shortener.get(short, showStats, secret);
 
   if (!data)
     return res.status(404).send({ error: 'Not found' });
@@ -94,6 +111,7 @@ app.get('/:short', async (req, res) => {
 
   res.redirect(data.url);
 });
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
