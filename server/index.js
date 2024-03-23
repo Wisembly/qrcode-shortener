@@ -56,6 +56,21 @@ app.get('/qrcode', async (req, res) => {
   }
 });
 
+app.get('/shorten', async (req, res) => {
+  const { url, desiredShort } = req.query;
+
+  if (!url)
+    return res.status(400).send({ error: 'url query parameter is required' });
+
+  const short = await shortener.shorten(url, desiredShort);
+
+  res.send({
+    short,
+    url: `${domain}/${short}`,
+    stats: `${domain}/${short}+`,
+  });
+});
+
 // route every /* url
 app.get('/:short', async (req, res) => {
   let { short } = req.params;
