@@ -23,3 +23,34 @@ An ecosystem dist file is provided in the repository for file structure and vari
 ```bash
 pm2 start ecosystem.config.js
 ```
+
+# Usage
+
+## Shorten a URL
+
+```bash
+curl -X GET "http://localhost:3322/shorten?url=https://www.google.com"
+```
+Optional parameters:
+
+- `desiredShort`: the desired short url. If not provided, a random 4 characters string will be generated.
+
+## dynamically generate a QRCode
+
+```html
+<a href="http://localhost:3322/qrcode?url=https://www.google.com">
+```
+
+Optional parameters:
+- `desiredShort`: the desired short url. If not provided, a random 4 characters string will be generated.
+- `size`: the size of the QRCode. Default is 512x512.
+- `quality`: the quality of the QRCode (L, M, H). Default is M.
+- `output`: the output format of the QRCode (png, data). Default is png.
+
+## Get shortcode stats
+
+```bash
+curl -X GET "http://localhost:3322/stats?{short}+"
+```
+
+Use the shortcode you want to get the stats from, followed by a `+` sign.
